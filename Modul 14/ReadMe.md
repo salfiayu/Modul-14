@@ -372,7 +372,7 @@ int main() {
 ```
 
 > Sreenshoot 
-> ![Screenshot Soal 1](https://github.com/salfiayu/Modul-13/blob/main/Modul%2013/screenshoot/Screenshot%20(206).png)
+> ![Screenshot Soal 1](https://github.com/salfiayu/Modul-14/blob/main/Modul%2014/screenshoot/Screenshot%20(214).png)
 
 Program ini mengimplementasikan graph tidak berarah menggunakan linked list. Node A sampai H dihubungkan dan ditampilkan dalam bentuk adjacency list. Penelusuran DFS dilakukan secara mendalam menggunakan rekursi, sedangkan BFS dilakukan secara melebar menggunakan queue. Hasil program menampilkan adjacency list serta urutan penelusuran DFS dan BFS.
 
