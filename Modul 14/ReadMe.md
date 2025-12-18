@@ -12,125 +12,212 @@ Graph merupakan struktur data non-linear yang terdiri dari himpunan simpul (vert
 
 ```cpp
 #include <iostream>
-#include <string>
+#include <queue>
+#include <stack>
+
 using namespace std;
 
-struct ChildNode
+typedef char infoGraph;
+
+struct ElmNode;
+struct ElmEdge;
+
+typedef ElmNode *adrNode;
+typedef ElmEdge *adrEdge;
+
+struct ElmNode
 {
-    string info;
-    ChildNode *next;
+    infoGraph info;
+    int visited;
+    adrEdge firstEdge;
+    adrNode next;
 };
 
-struct ParentNode
+struct ElmEdge
 {
-    string info;
-    ChildNode *childHead;
-    ParentNode *next;
+    adrNode node;
+    adrEdge next;
 };
 
-ParentNode *createParent(string info)
+struct Graph
 {
-    ParentNode *newNode = new ParentNode;
-    newNode->info = info;
-    newNode->childHead = NULL;
-    newNode->next = NULL;
-    return newNode;
+    adrNode first;
+};
+
+void CreateGraph(Graph &G)
+{
+    G.first = NULL;
 }
 
-ChildNode *createChild(string info)
+adrNode AllocateNode(infoGraph X)
 {
-    ChildNode *newNode = new ChildNode;
-    newNode->info = info;
-    newNode->next = NULL;
-    return newNode;
+    adrNode P = new ElmNode;
+    P->info = X;
+    P->visited = 0;
+    P->firstEdge = NULL;
+    P->next = NULL;
+    return P;
 }
 
-void insertParent(ParentNode *&head, string info)
+adrEdge AllocateEdge(adrNode N)
 {
-    ParentNode *newNode = createParent(info);
-    if (head == NULL)
-    {
-        head = newNode;
-    }
-    else
-    {
-        ParentNode *temp = head;
-        while (temp->next != NULL)
-        {
-            temp = temp->next;
-        }
-        temp->next = newNode;
-    }
+    adrEdge P = new ElmEdge;
+    P->node = N;
+    P->next = NULL;
+    return P;
 }
 
-void insertChild(ParentNode *head, string parentInfo, string childInfo)
+void InsertNode(Graph &G, infoGraph X)
 {
-    ParentNode *p = head;
-    while (p != NULL && p->info != parentInfo)
-    {
-        p = p->next;
-    }
-
-    if (p != NULL)
-    {
-        ChildNode *newChild = createChild(childInfo);
-        if (p->childHead == NULL)
-        {
-            p->childHead = newChild;
-        }
-        else 
-        {
-            ChildNode *c = p->childHead;
-            while (c->next != NULL)
-            {
-                c = c->next;
-            }
-            c->next = newChild;
-        }
-    }
+    adrNode P = AllocateNode(X);
+    P->next = G.first;
+    G.first = P;
 }
 
-void printAll(ParentNode *head)
+adrNode FindNode(Graph G, infoGraph X)
 {
-    ParentNode *p = head;
-    while (p != NULL)
+    adrNode P = G.first;
+    while (P != NULL)
     {
-        cout << p->info;
-        ChildNode *c = p->childHead;
-        if (c != NULL)
+        if (P->info == X)
+            return P;
+        P = P->next;
+    }
+    return NULL;
+}
+
+void ConnectNode(Graph &G, infoGraph A, infoGraph B)
+{
+    adrNode N1 = FindNode(G, A);
+    adrNode N2 = FindNode(G, B);
+
+    if (N1 == NULL || N2 == NULL)
+    {
+        cout << "Node tidak ditemukan!\n";
+        return;
+    }
+
+    adrEdge E1 = AllocateEdge(N2);
+    E1->next = N1->firstEdge;
+    N1->firstEdge = E1;
+
+    adrEdge E2 = AllocateEdge(N1);
+    E2->next = N2->firstEdge;
+    N2->firstEdge = E2;
+}
+
+void PrintInfoGraph(Graph G)
+{
+    adrNode P = G.first;
+    while (P != NULL)
+    {
+        cout << "Node " << P->info << " terhubung dengan: ";
+        adrEdge E = P->firstEdge;
+        while (E != NULL)
         {
-            while (c != NULL)
-            {
-                cout << " -> " << c->info;
-                c = c->next;
-            }
+            cout << E->node->info << " ";
+            E = E->next;
         }
         cout << endl;
-        p = p->next;
+        P = P->next;
+    }
+}
+
+void ResetVisited(Graph &G)
+{
+    adrNode P = G.first;
+    while (P != NULL)
+    {
+        P->visited = 0;
+        P = P->next;
+    }
+}
+
+void PrintDFS(Graph &G, adrNode N)
+{
+    if (N == NULL)
+        return;
+
+    N->visited = 1;
+    cout << N->info << " ";
+
+    adrEdge E = N->firstEdge;
+    while (E != NULL)
+    {
+        if (E->node->visited == 0)
+        {
+            PrintDFS(G, E->node);
+        }
+        E = E->next;
+    }
+}
+
+void PrintBFS(Graph &G, adrNode N)
+{
+    if (N == NULL)
+        return;
+
+    queue<adrNode> Q;
+    Q.push(N);
+
+    while (!Q.empty())
+    {
+        adrNode curr = Q.front();
+        Q.pop();
+
+        if (curr->visited == 0)
+        {
+            curr->visited = 1;
+            cout << curr->info << " ";
+
+            adrEdge E = curr->firstEdge;
+            while (E != NULL)
+            {
+                if (E->node->visited == 0)
+                {
+                    Q.push(E->node);
+                }
+                E = E->next;
+            }
+        }
     }
 }
 
 int main()
 {
-    ParentNode *list = NULL;
+    Graph G;
+    CreateGraph(G);
+    InsertNode(G, 'A');
+    InsertNode(G, 'C');
+    InsertNode(G, 'D');
+    InsertNode(G, 'E');
+    
+    ConnectNode(G, 'A', 'B');
+    ConnectNode(G, 'A', 'C');
+    ConnectNode(G, 'B', 'D');
+    ConnectNode(G, 'C', 'E');
 
-    insertParent(list, "Parent Node 1");
-    insertParent(list, "Parent Node 2");
+    cout << "=== Struktur Graph (Adjacency List) ===\n";
+    PrintInfoGraph(G);
 
-    insertChild(list, "Parent Node 1", "Child Node A");
-    insertChild(list, "Parent Node 1", "Child Node B");
-    insertChild(list, "Parent Node 2", "Child Node C");
+    cout << "\n=== DFS dari Node A ===\n";
+    ResetVisited(G);
+    PrintDFS(G, FindNode(G, 'A'));
 
-    printAll(list);
+    cout << "\n\n=== BFS dari Node A ===\n";
+    ResetVisited(G);
+    PrintBFS(G, FindNode(G, 'A'));
 
+    cout << endl;
     return 0;
 }
+
 ```
 
 > Screenshoot 
 > ![Screenshot Soal 1](https://github.com/salfiayu/Modul-13/blob/main/Modul%2013/screenshoot/Screenshot%20(207).png)
 
-Program itu berfungsi membuat multi linked list yang menyimpan data bertingkat, di mana setiap parent bisa punya banyak child. Fungsi insertParent menambah parent baru, insertChild menambah child ke parent tertentu, dan printAll menampilkan semua parent beserta child-nya. Program ini dipakai untuk mengelola data hierarkis seperti kategori–subkategori atau fakultas–jurusan.
+Program ini membuat graph tak berarah menggunakan adjacency list di C++, di mana node dan edge disimpan dalam struct. Graph dapat ditambah node, dihubungkan antar node, dan ditampilkan strukturnya. Program juga menyediakan penelusuran DFS (rekursif) dan BFS (menggunakan queue) untuk menampilkan urutan kunjungan node dari node awal tertentu.
 
 ---
 
