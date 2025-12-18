@@ -215,7 +215,7 @@ int main()
 ```
 
 > Screenshoot 
-> ![Screenshot Soal 1](https://github.com/salfiayu/Modul-13/blob/main/Modul%2013/screenshoot/Screenshot%20(207).png)
+> ![Screenshot Soal 1](https://github.com/salfiayu/Modul-14/blob/main/Modul%2014/screenshoot/Screenshot%20(227).png)
 
 Program ini membuat graph tak berarah menggunakan adjacency list di C++, di mana node dan edge disimpan dalam struct. Graph dapat ditambah node, dihubungkan antar node, dan ditampilkan strukturnya. Program juga menyediakan penelusuran DFS (rekursif) dan BFS (menggunakan queue) untuk menampilkan urutan kunjungan node dari node awal tertentu.
 
